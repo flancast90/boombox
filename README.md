@@ -26,6 +26,12 @@ _Before doing command, please join a VC (Voice Channel)_
 ```bash
 $boombox track Track Name
 ```
+
+**Play War**
+```bash
+$war drawcard
+```
+
 _The preview snippet of the song will play in the Voice Channel_
 
 

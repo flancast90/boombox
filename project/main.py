@@ -2,13 +2,83 @@ import discord
 import discord.ext.commands
 import requests
 import time
+from random import randint
 
-api_key = "your api key"
+api_key = "ODg3MzYxMTEyODU1Njc4OTc2.YUDBbw.zQaWq6T1d5NWI-oEz2cQkUFkg-4"
 
 dis_client = discord.Client()
 
 # Perm Int: 515396566016
 # URL: https://discord.com/oauth2/authorize?client_id=887361112855678976&permissions=515396566016&scope=bot
+
+# simple functions required for war
+class playWar():
+    def randomClass(newClass):
+        if newClass == 0:
+            classCard = "Hearts"
+        elif newClass == 1:
+            classCard = "Spades"
+        elif newClass == 2:
+            classCard = "Diamonds"
+        elif newClass == 3:
+            classCard = "Clubs"
+        return classCard
+
+
+    # decide whether to serve face card or
+    # number card
+    def randomNum():
+    #face cards are drawn appr. 3/13 of the time
+        faceCard = randint(0, 12)
+        if faceCard < 9:
+            randNum = randint(0, 8)+2
+            return randNum
+        else:
+        # pick a random number, which is mapped
+        # to a card following the below key
+       	    randFace = randint(0,3)
+       	    if randFace == 0:
+           	    return "King"
+       	    elif randFace == 1:
+           	    return "Queen"
+       	    elif randFace == 2:
+           	    return "Jack"
+       	    elif randFace == 3:
+           	    return "Ace"
+
+    def computerPlayer(computerCard):
+        computerClass = randint(0, 3)
+        computerClassName = playWar.randomClass(computerClass)
+        data = "The computer drew a "+ str(computerCard)+" of "+computerClassName
+        return str(data)
+
+    def compareDraws(user, computer):
+        computerScr = computer
+        userScr = user
+        if computer == "Jack":
+            computerScr = int(11)
+        elif computer == "Queen":
+            computerScr = int(12)
+        elif computer == "King":
+            computerScr = int(13)
+        elif computer == "Ace":
+            computerScr = int(14)
+        if user == "Jack":
+            userScr = int(11)
+        elif user == "Queen":
+            userScr = int(12)
+        elif user == "King":
+            userScr = int(13)
+        elif user == "Ace":
+            userScr = int(14)
+  
+        if (userScr > computerScr):
+            return "player"
+        elif (userScr == computerScr):
+            return  "tie"
+        elif (userScr < computerScr):
+            return "comp"
+
 
 
 # function called to use the deezer api to grab artist info
@@ -80,6 +150,35 @@ def bot():
     async def on_message(message):
         if message.author == dis_client.user:
             return
+
+        # following only for War game
+        if message.content.startswith('$war'):
+            cmd = message.content.split('$war ')[1]
+
+            if ("drawcard" in cmd):
+                
+                userCard = playWar.randomNum()
+                userClass = randint(0, 3)
+                computerCard = playWar.randomNum()
+
+                randClass = playWar.randomClass(userClass)
+
+                embedVar = discord.Embed(title="Draw Results", description="", color=discord.Color.blue())
+                embedVar.set_thumbnail(url='https://flancast90.github.io/boombox/card-deck/'+str(userCard).lower()+'_of_'+randClass.lower()+'.png')
+
+                embedVar.add_field(name="You: ", value="Your card is a "+str(userCard)+" of "+randClass, inline=False)
+                embedVar.add_field(name="Computer: ", value=playWar.computerPlayer(computerCard), inline=False)
+                results = playWar.compareDraws(userCard, computerCard)
+    
+                if (results == "player"):
+                    embedVar.add_field(name="Results: ", value="You Won!", inline=False)
+                elif (results == "tie"):
+                    embedVar.add_field(name="Results: ", value="Tie!", inline=False)
+                elif (results == "comp"):
+                    embedVar.add_field(name="Results: ", value="You Lose :(", inline=False)
+
+                await message.channel.send(embed=embedVar)            
+
 
         # narrow message scope to only respond is the message starts with $boombox
         if message.content.startswith('$boombox'):

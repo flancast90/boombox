@@ -3,8 +3,9 @@ import discord.ext.commands
 import requests
 import time
 from random import randint
+import asyncio
 
-api_key = "your api key here"
+api_key = "your api key"
 
 dis_client = discord.Client()
 
@@ -138,7 +139,7 @@ def play_track_preview(track):
 
 
 # setup and etc required to initialise Discord bot
-def bot():
+async def bot():
 
     @dis_client.event
     async def on_ready():
@@ -207,7 +208,8 @@ def bot():
     
                     # play song through VC
                     if (message.guild.voice_client):
-                        # disconnect if new command given to avoid errors                    
+                        # disconnect if new command given to avoid errors
+                        finished = ["True"]                    
                         await message.guild.voice_client.disconnect()    
 
                     if (message.author.voice):
@@ -215,11 +217,11 @@ def bot():
                         vc = await channel.connect()
 
                         vc.play(discord.FFmpegPCMAudio(song_data[3]), after=lambda e: finished.__setitem__(0,"True"))
-                    while True:
-                        time.sleep(1)
-                        if (finished[0] == "True"):
-                            await message.guild.voice_client.disconnect()
-                            break    
+                        while True:
+                            await asyncio.sleep(1)
+                            if (finished[0] == "True"):
+                                await message.guild.voice_client.disconnect()
+                                break    
 
                     else:
                         await message.channel.send("❌ Error: Please join a Voice Channel for the music to be played in. ❌")
@@ -263,7 +265,7 @@ def bot():
                 await message.channel.send('❌ **Unknown command. Accepted strings are: $boombox artist artist name, $boombox album album name, $boombox track song name, and $boombox war** ❌')
 
 # call the bot function for the bot to login
-bot()
+asyncio.run(bot())
 
 # required: discord run call to authorise bot perms
 dis_client.run(api_key)

@@ -89,44 +89,44 @@ def bot():
             # check words after "$boombox" to see if the user wants to grab a specific track
             if ("track" in cmd):
                 # try/catch to catch exceptions and alert the user of them
-                #try:
+                try:
 
                     # TODO: change call to use array indexes as opposed to checking for the command in the
                     # entire string. Right now, as user could type: $boombox artist album and the program would 
                     # run the album loop.
-                word = cmd.split('track ')[1]
-                song_data = play_track_preview(word)
+                    word = cmd.split('track ')[1]
+                    song_data = play_track_preview(word)
 
-                embedVar = discord.Embed(title=song_data[1], description="", color=discord.Color.blue())
-                embedVar.set_thumbnail(url=song_data[0])
-                embedVar.add_field(name="Artist: ", value=song_data[2], inline=False)
-                embedVar.add_field(name="Album: ", value=song_data[4], inline=False)
-                embedVar.add_field(name="Preview: ", value="Attempting to play in Voice Channel", inline=False)
-                await message.channel.send(embed=embedVar)
+                    embedVar = discord.Embed(title=song_data[1], description="", color=discord.Color.blue())
+                    embedVar.set_thumbnail(url=song_data[0])
+                    embedVar.add_field(name="Artist: ", value=song_data[2], inline=False)
+                    embedVar.add_field(name="Album: ", value=song_data[4], inline=False)
+                    embedVar.add_field(name="Preview: ", value="Attempting to play in Voice Channel", inline=False)
+                    await message.channel.send(embed=embedVar)
 
-                finished = ["False"]
+                    finished = ["False"]
     
                     # play song through VC
-                if (message.guild.voice_client):
-                    # disconnect if new command given to avoid errors                    
-                    await message.guild.voice_client.disconnect()    
+                    if (message.guild.voice_client):
+                        # disconnect if new command given to avoid errors                    
+                        await message.guild.voice_client.disconnect()    
 
-                if (message.author.voice):
-                    channel = message.author.voice.channel
-                    vc = await channel.connect()
+                    if (message.author.voice):
+                        channel = message.author.voice.channel
+                        vc = await channel.connect()
 
-                    vc.play(discord.FFmpegPCMAudio(song_data[3]), after=lambda e: finished.__setitem__(0,"True"))
-                while True:
-                    time.sleep(1)
-                    if (finished[0] == "True"):
-                        await message.guild.voice_client.disconnect()
-                        break    
+                        vc.play(discord.FFmpegPCMAudio(song_data[3]), after=lambda e: finished.__setitem__(0,"True"))
+                    while True:
+                        time.sleep(1)
+                        if (finished[0] == "True"):
+                            await message.guild.voice_client.disconnect()
+                            break    
 
-                else:
-                    await message.channel.send("❌ Error: Please join a Voice Channel for the music to be played in. ❌")
+                    else:
+                        await message.channel.send("❌ Error: Please join a Voice Channel for the music to be played in. ❌")
                     
-                #except:
-                    #await message.channel.send('❌ **An error occurred. Check the track spelling, and make sure the track is an actual song.** ❌')
+                except:
+                    await message.channel.send('❌ **An error occurred. Check the track spelling, and make sure the track is an actual song.** ❌')
                     
         
             elif ("album" in cmd):

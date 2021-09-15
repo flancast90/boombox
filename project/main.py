@@ -4,7 +4,7 @@ import requests
 import time
 from random import randint
 
-api_key = "ODg3MzYxMTEyODU1Njc4OTc2.YUDBbw.zQaWq6T1d5NWI-oEz2cQkUFkg-4"
+api_key = "your api key here"
 
 dis_client = discord.Client()
 

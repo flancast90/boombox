@@ -5,6 +5,8 @@ import time
 from random import randint
 import asyncio
 
+import os
+
 api_key = "your api key"
 
 dis_client = discord.Client()
@@ -140,10 +142,56 @@ def play_track_preview(track):
 
 # setup and etc required to initialise Discord bot
 async def bot():
+    # songs added to the queue are appended here
+    queue = []
 
     @dis_client.event
     async def on_ready():
         print('Boombox logged in as: {0.user}'.format(dis_client))
+
+    async def return_track_and_play(message, trackname):
+    # try/catch to catch exceptions and alert the user of them
+        finished = ["False"]
+
+        try:
+
+            # TODO: change call to use array indexes as opposed to checking for the command in the
+            # entire string. Right now, as user could type: $boombox artist album and the program would 
+            # run the album loop.
+            word = trackname
+            song_data = play_track_preview(word)
+
+            embedVar = discord.Embed(title=song_data[1], description="", color=discord.Color.blue())
+            embedVar.set_thumbnail(url=song_data[0])
+            embedVar.add_field(name="Artist: ", value=song_data[2], inline=False)
+            embedVar.add_field(name="Album: ", value=song_data[4], inline=False)
+            embedVar.add_field(name="Preview: ", value="Attempting to play in Voice Channel", inline=False)
+            await message.channel.send(embed=embedVar)
+  
+            # play song through VC
+            if (message.guild.voice_client):
+                # disconnect if new command given to avoid errors
+                await message.guild.voice_client.disconnect()
+                await return_track_and_play(message, trackname)
+                                   
+                    
+            if (message.author.voice):
+                channel = message.author.voice.channel
+                vc = await channel.connect()
+
+                vc.play(discord.FFmpegPCMAudio(song_data[3]), after=lambda e: finished.__setitem__(0,"True"))
+                while True:
+                    await asyncio.sleep(1)
+                    if (finished[0] == "True"):
+                        await message.guild.voice_client.disconnect()
+                        break    
+
+            else:
+                await message.channel.send("❌ Error: Please join a Voice Channel for the music to be played in. ❌")
+                    
+        except:
+            traceback.print_exc()
+            await message.channel.send('❌ **An error occurred. Check the track spelling, and make sure the track is an actual song.** ❌')
 
 
     # simple listener to react to user messages
@@ -186,48 +234,11 @@ async def bot():
             # await message.channel.send('Boombox initiated!')
         
             cmd = message.content.split('$boombox ')[1]
+            finished = ["False"]
+          
             # check words after "$boombox" to see if the user wants to grab a specific track
             if ("track" in cmd):
-                # try/catch to catch exceptions and alert the user of them
-                try:
-
-                    # TODO: change call to use array indexes as opposed to checking for the command in the
-                    # entire string. Right now, as user could type: $boombox artist album and the program would 
-                    # run the album loop.
-                    word = cmd.split('track ')[1]
-                    song_data = play_track_preview(word)
-
-                    embedVar = discord.Embed(title=song_data[1], description="", color=discord.Color.blue())
-                    embedVar.set_thumbnail(url=song_data[0])
-                    embedVar.add_field(name="Artist: ", value=song_data[2], inline=False)
-                    embedVar.add_field(name="Album: ", value=song_data[4], inline=False)
-                    embedVar.add_field(name="Preview: ", value="Attempting to play in Voice Channel", inline=False)
-                    await message.channel.send(embed=embedVar)
-
-                    finished = ["False"]
-    
-                    # play song through VC
-                    if (message.guild.voice_client):
-                        # disconnect if new command given to avoid errors
-                        finished = ["True"]                    
-                        await message.guild.voice_client.disconnect()    
-
-                    if (message.author.voice):
-                        channel = message.author.voice.channel
-                        vc = await channel.connect()
-
-                        vc.play(discord.FFmpegPCMAudio(song_data[3]), after=lambda e: finished.__setitem__(0,"True"))
-                        while True:
-                            await asyncio.sleep(1)
-                            if (finished[0] == "True"):
-                                await message.guild.voice_client.disconnect()
-                                break    
-
-                    else:
-                        await message.channel.send("❌ Error: Please join a Voice Channel for the music to be played in. ❌")
-                    
-                except:
-                    await message.channel.send('❌ **An error occurred. Check the track spelling, and make sure the track is an actual song.** ❌')
+                await return_track_and_play(message, cmd.split('track ')[1])
                     
         
             elif ("album" in cmd):
@@ -260,9 +271,26 @@ async def bot():
                 except:
                     await message.channel.send('❌ **An error occurred. The specified artist does not exist or was not found.** ❌')
 
+            elif (("queue" in cmd) and ("play" not in cmd)):
+                word = cmd.split('queue ')[1]
+                queue.append(word)
+
+                await message.channel.send('🎵 **'+word+' added to queue. Play a track and the queue will play after, or type ```$boombox play queue``` if you don\'t wanna wait!** 🎵')
+
+            elif ("play queue" in cmd):
+                if (len(queue) == 0):
+                    await message.channel.send("❌ **There's nothing in your queue!** ❌")
+                    
+                else:
+                    for track in queue: 
+                        await return_track_and_play(message, track)
+                    queue.clear()
+                      
+
+
             # catch unknown commands and return a generic error message.
             else: 
-                await message.channel.send('❌ **Unknown command. Accepted strings are: $boombox artist artist name, $boombox album album name, $boombox track song name, and $boombox war** ❌')
+                await message.channel.send('❌ **Unknown command. Accepted strings are: $boombox artist artist name, $boombox album album name, $boombox track song name, $boombox queue song name, and $boombox war** ❌')
 
 # call the bot function for the bot to login
 asyncio.run(bot())

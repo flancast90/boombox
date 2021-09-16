@@ -2,10 +2,22 @@
 > A Rhythm-like music bot for discord, powered by Python and the Deezer API!
 
 
-### Install 
+### Install (on Discord Server)
 1. Navigate to https://discord.com/oauth2/authorize?client_id=887361112855678976&permissions=515396566016&scope=bot
 2. In the window that opens, select the server you would like to add the bot to, and then click the "Continue" button
 3. Login to your server. In the "Online" sidebar, you should see a new user called Boombox!
+
+
+### Install (local bot copy)
+1. 
+```bash
+cd project
+```
+2.
+```bash
+python3 main.py
+```
+_Make sure you add your API key inside the ``api_key = "your api key here"`` ``line in main.py``_
 
 
 ### Usage

@@ -9,7 +9,7 @@
 
 
 ### Usage
-At this time, boombox supports 3 different commands, and a game in-progress
+At this time, boombox supports 5 different commands, and a game in-progress
 
 **Check Artist Info**
 ```bash
@@ -26,6 +26,7 @@ _Before doing command, please join a VC (Voice Channel)_
 ```bash
 $boombox track Track Name
 ```
+_The preview snippet of the song will play in the Voice Channel_
 
 **Add Track to Queue**
 ```bash
@@ -41,8 +42,6 @@ $boombox play queue
 ```bash
 $war drawcard
 ```
-
-_The preview snippet of the song will play in the Voice Channel_
 
 
 ### License

@@ -27,6 +27,16 @@ _Before doing command, please join a VC (Voice Channel)_
 $boombox track Track Name
 ```
 
+**Add Track to Queue**
+```bash
+$boombox queue song name
+```
+
+**Play Queue**
+```bash
+$boombox play queue
+```
+
 **Play War**
 ```bash
 $war drawcard

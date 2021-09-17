@@ -148,6 +148,7 @@ async def bot():
     @dis_client.event
     async def on_ready():
         print('Boombox logged in as: {0.user}'.format(dis_client))
+        print('Boombox is currently active on '+str(len(dis_client.guilds))+' servers')
 
     async def return_track_and_play(message, trackname):
     # try/catch to catch exceptions and alert the user of them
@@ -271,11 +272,14 @@ async def bot():
                 except:
                     await message.channel.send('❌ **An error occurred. The specified artist does not exist or was not found.** ❌')
 
+            elif ("help" in cmd):
+                await message.channel.send("🤷 Need help? 🤷 Commands are ``$boombox track songname``, ``$boombox album albumname``, ``$boombox artist artistname``, ``$boombox queue songname``, ``$boombox play queue``, and ``$war drawcard`` (for game). ")
+
             elif (("queue" in cmd) and ("play" not in cmd)):
                 word = cmd.split('queue ')[1]
                 queue.append(word)
 
-                await message.channel.send('🎵 **'+word+' added to queue. Play a track and the queue will play after, or type ```$boombox play queue``` if you don\'t wanna wait!** 🎵')
+                await message.channel.send('🎵 **'+word+' added to queue. Type ```$boombox play queue``` if you don\'t wanna wait!** 🎵')
 
             elif ("play queue" in cmd):
                 if (len(queue) == 0):

@@ -1,0 +1,7 @@
+discord
+requests
+time
+asyncio
+random
+os
+discord.py[voice]

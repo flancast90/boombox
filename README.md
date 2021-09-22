@@ -38,12 +38,11 @@ _Before doing command, please join a VC (Voice Channel)_
 ```bash
 $boombox track Track Name
 ```
+- select the "play" emoji reaction to play a track in the Voice Channel! (v2.0.0)
 _The preview snippet of the song will play in the Voice Channel_
 
 **Add Track to Queue**
-```bash
-$boombox queue song name
-```
+- select the "queue" emoji to add the song to the queue! (v2.0.0)
 
 **Play Queue**
 ```bash
